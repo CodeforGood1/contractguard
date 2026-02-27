@@ -32,23 +32,20 @@ jobs:
       - name: Run unit tests
         run: pytest tests/ -v --tb=short
 
-      - name: Analyze JSON samples (CI mode)
+      - name: Analyze JSON samples
         run: |
           contractguard analyze --type json --path samples/json/ \
-            --report report-json.html --ci
-        continue-on-error: true
+            --report report-json.html
 
-      - name: Analyze SQL samples (CI mode)
+      - name: Analyze SQL samples
         run: |
           contractguard analyze --type sql --path samples/sql/ \
-            --report report-sql.html --ci
-        continue-on-error: true
+            --report report-sql.html
 
-      - name: Analyze Regex samples (CI mode)
+      - name: Analyze Regex samples
         run: |
           contractguard analyze --type regex --path samples/regex/ \
-            --report report-regex.html --ci
-        continue-on-error: true
+            --report report-regex.html
 
       - name: Upload HTML reports
         if: always()
