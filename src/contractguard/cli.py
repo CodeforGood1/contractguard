@@ -106,11 +106,11 @@ def _run_all_analyzers(path: Path, rules_path: Path) -> list[Finding]:
     return all_findings
 
 
-def _print_findings(findings: list[Finding], ci_mode: bool = False) -> None:
-    """Print findings to the console using rich tables."""
+def _print_findings(findings: list[Finding], ci_mode: bool = False) -> bool:
+    """Print findings to the console using rich tables. Returns True if CI should fail."""
     if not findings:
         console.print("[green]✓ No issues found.[/green]")
-        return
+        return False
 
     table = Table(title="🛡️ ContractGuard Findings", show_lines=True)
     table.add_column("ID", style="bold")
@@ -146,7 +146,8 @@ def _print_findings(findings: list[Finding], ci_mode: bool = False) -> None:
 
     if ci_mode and (blocks > 0 or crits > 0):
         console.print("[red bold]CI mode: failing due to critical/block findings.[/red bold]")
-        raise typer.Exit(2)
+        return True
+    return False
 
 
 def _print_score(findings: list[Finding]) -> None:
@@ -202,7 +203,7 @@ def analyze(
     else:
         findings = _run_analyzer(type, path, rules_path, db=db)
 
-    _print_findings(findings, ci_mode=ci)
+    ci_fail = _print_findings(findings, ci_mode=ci)
 
     if show_score or type == "all":
         _print_score(findings)
@@ -242,6 +243,9 @@ def analyze(
         sarif = render_sarif_report(findings, analyzer_type=type)
         report_sarif.write_text(json.dumps(sarif, indent=2), encoding="utf-8")
         console.print(f"[green]SARIF report written to {report_sarif}[/green]")
+
+    if ci_fail:
+        raise typer.Exit(2)
 
 
 @app.command()
