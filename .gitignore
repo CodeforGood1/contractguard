@@ -1,0 +1,40 @@
+# .gitignore for ContractGuard
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Reports (generated)
+report-*.html
+full-report.html
+self-scan-report.html
+*.report.json
+sarif-report.json
+
+# ContractGuard history database
+.contractguard/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/

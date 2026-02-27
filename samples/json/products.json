@@ -1,0 +1,8 @@
+[
+  {"id": 1, "name": "Widget A", "price": 9.99, "status": "active", "email": "alice@example.com"},
+  {"id": "2", "name": "Widget B", "price": "19.99", "status": 1, "email": "bob@example.com"},
+  {"id": 3, "name": "Widget C", "price": 29.99, "status": "active", "email": null},
+  {"id": 4, "name": "Widget D", "price": 39.99, "email": "dave@example.com"},
+  {"id": "5", "name": "Widget E", "price": 49.99, "status": "inactive", "timestamp": "2025-01-01T00:00:00Z"},
+  {"id": 6, "name": "Widget F", "price": "free", "status": "active", "timestamp": 1704067200}
+]

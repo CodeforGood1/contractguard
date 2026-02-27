@@ -1,0 +1,31 @@
+# Dangerous config — YAML format
+server:
+  host: 0.0.0.0
+  port: 8080
+  debug: true
+  admin_port: 8081
+
+security:
+  secret_key: "changeme"
+  default_password: "admin"
+  ssl_enabled: false
+  cors_allow_all: true
+  allowed_origins:
+    - "*"
+
+database:
+  user: root
+  password: password123
+  host: db.internal
+  port: 3306
+  ssl: false
+
+logging:
+  level: DEBUG
+  show_stack_traces: true
+  log_passwords: true
+
+auth:
+  jwt_secret: "super-secret"
+  token_expiry: 999999
+  allow_anonymous: true

@@ -1,0 +1,6 @@
+[
+  {"id": 1001, "amount": 250.00, "currency": "USD", "user_id": "u-abc"},
+  {"id": 1002, "amount": "100.50", "currency": "USD", "user_id": 42},
+  {"id": "1003", "amount": 75, "currency": "EUR", "user_id": "u-def"},
+  {"id": 1004, "amount": null, "currency": "GBP", "user_id": "u-ghi"}
+]

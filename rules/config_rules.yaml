@@ -1,0 +1,91 @@
+# ContractGuard — Configuration Security Rules
+
+- id: CFG001
+  name: debug_enabled
+  analyzer: config
+  severity: critical
+  description: "Debug mode is enabled — exposes stack traces, internal paths, and secrets to attackers."
+  matcher: "debug_enabled == true"
+  suggestion: "Set DEBUG=false in production. Use separate config profiles for dev/staging/prod."
+  attack_vector: "Debug mode → stack traces leak internal paths, DB structures, and variable values to attackers."
+  cwe: "CWE-215"
+
+- id: CFG002
+  name: cors_allow_all
+  analyzer: config
+  severity: critical
+  description: "CORS allows all origins (*) — any website can make authenticated requests."
+  matcher: "cors_allow_all == true"
+  suggestion: "Whitelist specific origins. Never use '*' in production with credentials."
+  attack_vector: "Open CORS → malicious site makes API calls with user's cookies → full account takeover."
+  cwe: "CWE-346"
+
+- id: CFG003
+  name: insecure_secret_key
+  analyzer: config
+  severity: block
+  description: "Weak/default secret key detected — sessions can be forged."
+  matcher: "insecure_secret_key == true"
+  suggestion: "Generate a cryptographically random secret key (>256 bits). Rotate regularly."
+  attack_vector: "Known secret key → forge session cookies → admin access without credentials."
+  cwe: "CWE-330"
+
+- id: CFG004
+  name: default_password
+  analyzer: config
+  severity: block
+  description: "Default/weak password in configuration — trivial to exploit."
+  matcher: "default_password == true"
+  suggestion: "Use strong, unique passwords. Store them in a vault, not in config files."
+  attack_vector: "Default password → immediate unauthorized access → full system compromise."
+  cwe: "CWE-798"
+
+- id: CFG005
+  name: ssl_disabled
+  analyzer: config
+  severity: critical
+  description: "SSL/TLS is disabled — all traffic is in plaintext."
+  matcher: "ssl_disabled == true"
+  suggestion: "Enable TLS. Use Let's Encrypt for free certificates."
+  attack_vector: "No TLS → man-in-the-middle intercepts credentials, tokens, and data in transit."
+  cwe: "CWE-319"
+
+- id: CFG006
+  name: exposed_admin_port
+  analyzer: config
+  severity: warning
+  description: "Service bound to 0.0.0.0 — exposed to all network interfaces."
+  matcher: "exposed_admin_port == true"
+  suggestion: "Bind to 127.0.0.1 for local-only services. Use a reverse proxy for public services."
+  attack_vector: "Open binding → service accessible from any network → expands attack surface."
+  cwe: "CWE-668"
+
+- id: CFG007
+  name: wildcard_host
+  analyzer: config
+  severity: warning
+  description: "Wildcard host allowed — enables host header injection attacks."
+  matcher: "wildcard_host == true"
+  suggestion: "Whitelist specific hostnames. Never use '*' for ALLOWED_HOSTS."
+  attack_vector: "Host header injection → cache poisoning, password reset hijacking."
+  cwe: "CWE-644"
+
+- id: CFG008
+  name: root_user
+  analyzer: config
+  severity: critical
+  description: "Service configured to run as root — any exploit gains full system access."
+  matcher: "root_user == true"
+  suggestion: "Create a dedicated non-root service account. Apply principle of least privilege."
+  attack_vector: "Root process exploited → full system compromise, lateral movement."
+  cwe: "CWE-250"
+
+- id: CFG009
+  name: multiple_dangerous_settings
+  analyzer: config
+  severity: critical
+  description: "Multiple dangerous configuration settings detected."
+  matcher: "dangerous_settings_count > 3"
+  suggestion: "Perform a full security review of your configuration before deployment."
+  attack_vector: "Compounding misconfigurations → multiple attack vectors available simultaneously."
+  cwe: "CWE-16"

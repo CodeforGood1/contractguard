@@ -1,0 +1,58 @@
+# ContractGuard — Regex Analyzer Rules
+# Detect catastrophic backtracking and complexity risks in regex patterns.
+
+- id: REGEX001
+  name: nested_quantifiers
+  analyzer: regex
+  severity: critical
+  description: "Nested quantifiers cause catastrophic backtracking."
+  matcher: "nested_quantifiers == true"
+  suggestion: "Refactor to use atomic groups or explicit boundaries; test against crafted worst-case sample."
+
+- id: REGEX002
+  name: high_complexity
+  analyzer: regex
+  severity: warning
+  description: "Regex complexity score is high — review for performance."
+  matcher: "complexity_score > 25"
+  suggestion: "Simplify the pattern; break into smaller sub-patterns or use parser combinators for complex grammars."
+
+- id: REGEX003
+  name: backreference_risk
+  analyzer: regex
+  severity: warning
+  description: "Backreferences can cause exponential matching time on certain inputs."
+  matcher: "has_backreference == true"
+  suggestion: "Replace backreferences with explicit capture groups checked in application code."
+
+- id: REGEX004
+  name: invalid_pattern
+  analyzer: regex
+  severity: critical
+  description: "Regex pattern is syntactically invalid — will raise an error at runtime."
+  matcher: "is_valid == false"
+  suggestion: "Fix the syntax error before deploying. Check for unbalanced groups, bad escapes, or invalid quantifiers."
+
+- id: REGEX005
+  name: very_long_pattern
+  analyzer: regex
+  severity: info
+  description: "Pattern is very long — consider readability and maintainability."
+  matcher: "pattern_length > 100"
+  suggestion: "Use re.VERBOSE mode with comments, or break into named sub-patterns."
+
+- id: REGEX006
+  name: excessive_groups
+  analyzer: regex
+  severity: info
+  description: "Pattern has many capture groups which impacts performance."
+  matcher: "group_count > 5"
+  suggestion: "Use non-capturing groups (?:...) for groups you don't need to reference."
+
+- id: REGEX007
+  name: extreme_complexity
+  analyzer: regex
+  severity: critical
+  description: "Regex complexity is extreme — likely causes ReDoS (Regular Expression Denial of Service)."
+  matcher: "complexity_score > 60"
+  suggestion: "This pattern is a security risk. Rewrite completely or use a non-backtracking engine (e.g., RE2)."

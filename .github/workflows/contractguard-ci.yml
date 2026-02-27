@@ -1,0 +1,58 @@
+name: ContractGuard CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  contractguard:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run unit tests
+        run: pytest tests/ -v --tb=short
+
+      - name: Analyze JSON samples (CI mode)
+        run: |
+          contractguard analyze --type json --path samples/json/ \
+            --report report-json.html --ci
+        continue-on-error: true
+
+      - name: Analyze SQL samples (CI mode)
+        run: |
+          contractguard analyze --type sql --path samples/sql/ \
+            --report report-sql.html --ci
+        continue-on-error: true
+
+      - name: Analyze Regex samples (CI mode)
+        run: |
+          contractguard analyze --type regex --path samples/regex/ \
+            --report report-regex.html --ci
+        continue-on-error: true
+
+      - name: Upload HTML reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: contractguard-reports-${{ matrix.python-version }}
+          path: report-*.html

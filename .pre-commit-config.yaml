@@ -1,0 +1,30 @@
+# ContractGuard pre-commit hook configuration
+# Install: pip install pre-commit && pre-commit install
+
+repos:
+  - repo: local
+    hooks:
+      - id: contractguard-json
+        name: ContractGuard — JSON schema check
+        language: system
+        entry: contractguard analyze --type json --path
+        types: [json]
+        pass_filenames: true
+        args: ["--ci"]
+
+      - id: contractguard-sql
+        name: ContractGuard — SQL safety check
+        language: system
+        entry: contractguard analyze --type sql --path
+        types: [sql]
+        pass_filenames: true
+        args: ["--ci"]
+
+      - id: contractguard-regex
+        name: ContractGuard — Regex complexity check
+        language: system
+        entry: contractguard analyze --type regex --path
+        types: [text]
+        files: \.(regex|txt)$
+        pass_filenames: true
+        args: ["--ci"]

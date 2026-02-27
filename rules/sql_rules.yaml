@@ -1,0 +1,66 @@
+# ContractGuard — SQL Analyzer Rules
+# Detect performance anti-patterns and safety issues in SQL queries.
+
+- id: SQL001
+  name: select_star
+  analyzer: sql
+  severity: warning
+  description: "Avoid SELECT * in production queries."
+  matcher: "contains_select_star == true"
+  suggestion: "List only required columns; use explicit projection to reduce IO and avoid index blindness."
+
+- id: SQL002
+  name: missing_where_clause
+  analyzer: sql
+  severity: critical
+  description: "UPDATE/DELETE/SELECT without WHERE clause — affects all rows."
+  matcher: "missing_where_clause == true"
+  suggestion: "Add a WHERE clause to limit the scope of the operation. Full-table operations are almost always a bug."
+
+- id: SQL003
+  name: leading_wildcard_like
+  analyzer: sql
+  severity: warning
+  description: "LIKE with leading wildcard prevents index usage."
+  matcher: "uses_like_wildcard_prefix == true"
+  suggestion: "Use full-text search or reverse indexes instead of LIKE '%term'."
+
+- id: SQL004
+  name: cartesian_join
+  analyzer: sql
+  severity: critical
+  description: "Implicit cartesian join detected (comma-separated FROM clause without JOIN)."
+  matcher: "uses_cartesian_join == true"
+  suggestion: "Use explicit JOIN syntax with ON conditions to avoid accidental cross joins."
+
+- id: SQL005
+  name: or_in_where
+  analyzer: sql
+  severity: info
+  description: "OR conditions in WHERE may prevent index usage."
+  matcher: "uses_or_in_where == true"
+  suggestion: "Consider rewriting with UNION ALL or IN (...) for better index utilization."
+
+- id: SQL006
+  name: excessive_joins
+  analyzer: sql
+  severity: warning
+  description: "Query joins many tables — may indicate N+1 or over-fetching."
+  matcher: "join_count > 3"
+  suggestion: "Review if all joins are necessary; consider denormalization or caching for read-heavy paths."
+
+- id: SQL007
+  name: full_table_scan
+  analyzer: sql
+  severity: warning
+  description: "EXPLAIN indicates a full table scan — missing index."
+  matcher: "uses_full_scan == true"
+  suggestion: "Add an index on the filtered/joined columns; verify with EXPLAIN QUERY PLAN."
+
+- id: SQL008
+  name: uses_distinct
+  analyzer: sql
+  severity: info
+  description: "DISTINCT usage may mask duplicate-row issues upstream."
+  matcher: "uses_distinct == true"
+  suggestion: "Investigate why duplicates exist; fix the root cause rather than masking with DISTINCT."

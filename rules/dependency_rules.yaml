@@ -1,0 +1,31 @@
+# ContractGuard — Dependency Vulnerability Rules
+
+- id: DEP001
+  name: vulnerable_packages
+  analyzer: deps
+  severity: critical
+  description: "Known vulnerable dependencies detected — active CVEs."
+  matcher: "has_vulnerable_packages == true"
+  suggestion: "Run 'pip install --upgrade <package>' for each affected package. Automate with Dependabot or Renovate."
+  attack_vector: "Known CVEs → automated exploit tools exist → mass scanning by attackers."
+  cwe: "CWE-1035"
+
+- id: DEP002
+  name: critical_vulns
+  analyzer: deps
+  severity: block
+  description: "Critical-severity vulnerabilities found — deploy must be blocked."
+  matcher: "critical_vuln_count > 0"
+  suggestion: "Upgrade critical packages immediately. These have known public exploits."
+  attack_vector: "Critical CVEs often have Metasploit modules or PoC exploits available within days of disclosure."
+  cwe: "CWE-1035"
+
+- id: DEP003
+  name: unpinned_packages
+  analyzer: deps
+  severity: warning
+  description: "Unpinned package versions — builds are non-reproducible, vulnerable to supply chain attacks."
+  matcher: "has_unpinned_packages == true"
+  suggestion: "Pin all package versions (pkg==x.y.z). Use pip-compile or poetry.lock for deterministic builds."
+  attack_vector: "Unpinned dependency → attacker uploads malicious version → auto-installed on next build."
+  cwe: "CWE-829"

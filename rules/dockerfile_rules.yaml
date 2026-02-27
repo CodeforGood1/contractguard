@@ -1,0 +1,78 @@
+# ContractGuard — Dockerfile Security Rules
+
+- id: DOCK001
+  name: runs_as_root
+  analyzer: dockerfile
+  severity: critical
+  description: "Container runs as root — any container escape grants host-level access."
+  matcher: "runs_as_root == true"
+  suggestion: "Add 'USER nonroot' instruction. Create a non-root user with RUN useradd."
+  attack_vector: "Root in container + escape exploit → full host compromise, lateral movement to other containers."
+  cwe: "CWE-250"
+
+- id: DOCK002
+  name: latest_tag
+  analyzer: dockerfile
+  severity: warning
+  description: "Using :latest or untagged base image — non-reproducible, may pull vulnerable versions."
+  matcher: "uses_latest_tag == true"
+  suggestion: "Pin to a specific digest or version tag (e.g., python:3.12-slim@sha256:abc...)."
+  attack_vector: "Unpinned image → supply chain attack via poisoned base image update."
+  cwe: "CWE-829"
+
+- id: DOCK003
+  name: copy_dot
+  analyzer: dockerfile
+  severity: warning
+  description: "COPY . copies entire build context — may include secrets, .git, .env files."
+  matcher: "has_copy_dot == true"
+  suggestion: "Use .dockerignore to exclude .git, .env, *.key, node_modules. Or COPY specific files."
+  attack_vector: "Secrets in build context → embedded in image layer → extractable by anyone with image access."
+  cwe: "CWE-200"
+
+- id: DOCK004
+  name: hardcoded_env_secrets
+  analyzer: dockerfile
+  severity: block
+  description: "Secrets hardcoded in ENV instruction — visible in image history forever."
+  matcher: "hardcoded_secrets == true"
+  suggestion: "Use Docker secrets, build-time --secret flag, or runtime environment variables. Never ENV for secrets."
+  attack_vector: "'docker history' reveals all ENV values → credentials exposed to anyone with image pull access."
+  cwe: "CWE-798"
+
+- id: DOCK005
+  name: curl_pipe_bash
+  analyzer: dockerfile
+  severity: critical
+  description: "curl | bash pattern — executing untrusted remote code during build."
+  matcher: "curl_pipe_bash == true"
+  suggestion: "Download scripts first, verify checksums, then execute. Pin script URLs to specific commits."
+  attack_vector: "Script source compromised → malicious code injected into every container build."
+  cwe: "CWE-829"
+
+- id: DOCK006
+  name: no_healthcheck
+  analyzer: dockerfile
+  severity: info
+  description: "No HEALTHCHECK defined — orchestrator cannot detect unhealthy containers."
+  matcher: "no_healthcheck == true"
+  suggestion: "Add HEALTHCHECK instruction to enable automatic container health monitoring."
+
+- id: DOCK007
+  name: exposes_ssh
+  analyzer: dockerfile
+  severity: critical
+  description: "SSH port (22) exposed — containers should be managed via orchestrator, not SSH."
+  matcher: "exposes_ssh == true"
+  suggestion: "Remove EXPOSE 22. Use 'docker exec' or kubectl for debugging. SSH in containers is an anti-pattern."
+  attack_vector: "SSH exposed → brute force attacks, credential stuffing, unauthorized shell access."
+  cwe: "CWE-284"
+
+- id: DOCK008
+  name: sudo_usage
+  analyzer: dockerfile
+  severity: warning
+  description: "sudo used in Dockerfile — indicates container is not properly configured for non-root."
+  matcher: "uses_sudo == true"
+  suggestion: "Run build steps as root, then switch to non-root USER. Remove sudo from final image."
+  cwe: "CWE-250"

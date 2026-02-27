@@ -1,0 +1,44 @@
+{
+  "customers": [
+    {
+      "id": 1,
+      "full_name": "John Doe",
+      "email": "john.doe@example.com",
+      "phone": "555-123-4567",
+      "ssn": "123-45-6789",
+      "credit_card": "4111-1111-1111-1111",
+      "date_of_birth": "1990-01-15",
+      "address": "123 Main St, Springfield, IL 62701",
+      "medical_record_number": "MRN-2024-001234",
+      "notes": "VIP customer, handles large transactions"
+    },
+    {
+      "id": 2,
+      "full_name": "Jane Smith",
+      "email": "jane.smith@example.com",
+      "phone": "(555) 234-5678",
+      "ssn": "234-56-7890",
+      "credit_card": "5500-0000-0000-0004",
+      "date_of_birth": "1985-06-22",
+      "address": "456 Oak Ave, Portland, OR 97201",
+      "passport_number": "X12345678",
+      "iban": "DE89370400440532013000"
+    },
+    {
+      "id": 3,
+      "full_name": "Bob Wilson",
+      "email": "bob.wilson@test.com", 
+      "ip_address": "192.168.1.100",
+      "ssn": "345-67-8901",
+      "credit_card": "3782-822463-10005",
+      "date_of_birth": "06/22/1985",
+      "drivers_license": "D1234567"
+    }
+  ],
+  "metadata": {
+    "exported_at": "2024-01-15T10:30:00Z",
+    "exported_by": "admin",
+    "total_records": 3,
+    "contains_pii": true
+  }
+}

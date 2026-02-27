@@ -1,0 +1,69 @@
+# ContractGuard — JSON Analyzer Rules
+# These rules detect schema inconsistencies across JSON payload samples.
+
+- id: JSON001
+  name: inconsistent_field_types
+  analyzer: json
+  severity: warning
+  description: "Field 'price' has multiple types across sample payloads."
+  matcher: "field_types('price') > 1"
+  suggestion: "Standardize producer to send numbers; validate/convert in consumer."
+  example:
+    - '{"id": 1, "price": 9.99}'
+    - '{"id": 2, "price": "9.99"}'
+
+- id: JSON002
+  name: inconsistent_id_types
+  analyzer: json
+  severity: critical
+  description: "Field 'id' has multiple types — breaks joins and lookups."
+  matcher: "field_types('id') > 1"
+  suggestion: "Enforce a single ID type (prefer string UUIDs or consistent integers)."
+
+- id: JSON003
+  name: inconsistent_status_types
+  analyzer: json
+  severity: warning
+  description: "Field 'status' has multiple types across payloads."
+  matcher: "field_types('status') > 1"
+  suggestion: "Use a string enum for status fields; document allowed values."
+
+- id: JSON004
+  name: nullable_fields_detected
+  analyzer: json
+  severity: info
+  description: "Some fields contain null values — may cause NullPointerExceptions downstream."
+  matcher: "nullable_fields > 0"
+  suggestion: "Decide on default-value strategy (empty string, 0, etc.) or make nullable handling explicit."
+
+- id: JSON005
+  name: optional_fields_detected
+  analyzer: json
+  severity: info
+  description: "Some fields are missing from certain payloads — indicates schema drift."
+  matcher: "optional_fields > 0"
+  suggestion: "Define and enforce a JSON Schema contract between producer and consumer."
+
+- id: JSON006
+  name: inconsistent_email_types
+  analyzer: json
+  severity: warning
+  description: "Field 'email' has multiple types across payloads."
+  matcher: "field_types('email') > 1"
+  suggestion: "Ensure email is always a string; validate format on ingestion."
+
+- id: JSON007
+  name: inconsistent_timestamp_types
+  analyzer: json
+  severity: warning
+  description: "Field 'timestamp' has inconsistent types (e.g., string vs integer)."
+  matcher: "field_types('timestamp') > 1"
+  suggestion: "Standardize on ISO-8601 strings or Unix epoch integers — not both."
+
+- id: JSON008
+  name: inconsistent_amount_types
+  analyzer: json
+  severity: critical
+  description: "Field 'amount' has multiple types — financial data must be type-consistent."
+  matcher: "field_types('amount') > 1"
+  suggestion: "Always use a numeric type for monetary amounts; consider using strings with explicit precision."

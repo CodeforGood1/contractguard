@@ -1,0 +1,41 @@
+# ContractGuard — PII Detection Rules
+
+- id: PII001
+  name: pii_detected
+  analyzer: pii
+  severity: critical
+  description: "Personally Identifiable Information found in data files."
+  matcher: "pii_count > 0"
+  suggestion: "Remove PII from source/data files. Use tokenization, encryption, or a PII vault. Ensure GDPR/CCPA compliance."
+  attack_vector: "Data breach → PII exposure → identity theft, regulatory fines up to 4% of global revenue (GDPR)."
+  cwe: "CWE-359"
+
+- id: PII002
+  name: ssn_detected
+  analyzer: pii
+  severity: block
+  description: "Social Security Numbers detected — highest-risk PII."
+  matcher: "has_ssn == true"
+  suggestion: "Never store raw SSNs. Use last-4-digits tokens or encrypted storage with strict access controls."
+  attack_vector: "SSN theft → full identity theft, tax fraud, credit fraud."
+  cwe: "CWE-359"
+
+- id: PII003
+  name: credit_card_detected
+  analyzer: pii
+  severity: block
+  description: "Credit card numbers detected — PCI-DSS violation."
+  matcher: "has_credit_card == true"
+  suggestion: "Never store raw card numbers. Use a PCI-compliant payment processor (Stripe, Braintree). Tokenize immediately."
+  attack_vector: "Card numbers extracted → financial fraud, PCI fines up to $500k/month."
+  cwe: "CWE-312"
+
+- id: PII004
+  name: pii_field_names
+  analyzer: pii
+  severity: warning
+  description: "Data contains field names suggesting PII (e.g., 'ssn', 'dob', 'address')."
+  matcher: "pii_field_names_count > 2"
+  suggestion: "Review data schema for PII exposure. Apply data classification labels and enforce access controls."
+  attack_vector: "Schema reveals PII structure → targeted extraction in a breach."
+  cwe: "CWE-200"
